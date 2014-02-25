@@ -8,18 +8,46 @@ import math
 import sys
 import pygame
 
+
+
+backgorundColor = (0, 0, 0)
+foregroundColor = (255, 255, 255)
+
+
 def log_distance(level):
     lam = 0.125
     return lam / (4 * math.pi * (10 ** (level / 20 / 1.1)))
 
 
-def draw(window, values, aps, origin, scale):
+def draw_room(window, corners, origin, scale):
+    print corners
+    shifted_corners = []
+    for i in range(0, len(corners)):
+        new_corner = (corners[i][0] + origin[0] * scale[0] * 100, corners[i][1] + origin[1] * scale[1] * 100)
+        print "new corner ", new_corner[0] * scale[0] * 100
+        new_corner = ( int(new_corner[0] * scale[0] * 100), int(new_corner[1] * scale[1] * 100) )
+        #shifted_corners = [shifted_corners, new_corner]
+        shifted_corners.append(new_corner)
+    print shifted_corners
+    pygame.draw.lines(window, backgorundColor, True, shifted_corners, 1)
+
+
+def draw(window, values, aps, corners, origin, scale):
     if values == {}:
         return
 
-    backgorundColor = (0, 0, 0)
-    foregroundColor = (255, 255, 255)
     window.fill(backgorundColor)
+
+    #draw_room(window, corners, origin, scale) print corners
+    shifted_corners = []
+    for i in range(0, len(corners)):
+        new_corner = (corners[i][0] + origin[0], corners[i][1] + origin[1])
+        print "new corner ", new_corner[0] * scale[0] * 100
+        new_corner = ( int(new_corner[0] * scale[0] * 100), int(new_corner[1] * scale[1] * 100) )
+        shifted_corners.append(new_corner)
+    print shifted_corners
+    pygame.draw.lines(window, foregroundColor, True, shifted_corners, 1)
+
 
     x_0 = int(origin[0] * scale[0] * 100)
     y_0 = int(origin[1] * scale[1] * 100)
@@ -28,45 +56,11 @@ def draw(window, values, aps, origin, scale):
         if key in values.keys():
             pos = ( int(float(aps[key][0]) * 100 * scale[0]), int(float(aps[key][1]) * 100 * scale[1]) )
             pos = (pos[0] + x_0, pos[1] + y_0)
-            pygame.draw.circle(window, foregroundColor, pos, int(scale[0] / 10.0))
+            pygame.draw.circle(window, foregroundColor, pos, 10)
             pygame.draw.circle(window, foregroundColor, pos, int(log_distance(float(values[key][1]) * -1) * 100 * scale[0]), 1)
             #print 'radius ', log_distance(float(values['2'][1])) * 100
             #print pos
             print 'current time ', values[key][0]
-
-    #if '2' in values.keys():
-    #    pos = ( int(float(aps['2'][0]) * 100 * scale[0]), int(float(aps['2'][1]) * 100 * scale[1]) )
-    #    pos = (pos[0] + x_0, pos[1] + y_0)
-    #    pygame.draw.circle(window, foregroundColor, pos, int(scale[0] / 10.0))
-    #    pygame.draw.circle(window, foregroundColor, pos, int(log_distance(float(values['2'][1]) * -1) * 100 * scale[0]), 1)
-    #    #print 'radius ', log_distance(float(values['2'][1])) * 100
-    #    #print pos
-    #    print 'current time ', values['2'][0]
-
-
-    #if '8' in values.keys():
-    #    pos = ( int(float(aps['8'][0]) * 100 * scale[0]), int(float(aps['8'][1]) * 100 * scale[1]) )
-    #    pos = (pos[0] + x_0, pos[1] + y_0)
-    #    pygame.draw.circle(window, foregroundColor, pos, int(scale[0] / 10.0))
-    #    pygame.draw.circle(window, foregroundColor, pos, int(log_distance(float(values['8'][1]) * -1) * 100 * scale[0]), 1)
-    #    #print pos
-    #    print 'current time ', values['8'][0]
-
-    #if '10' in values.keys():
-    #    pos = ( int(float(aps['10'][0]) * 100 * scale[0]), int(float(aps['10'][1]) * 100 * scale[1]) )
-    #    pos = (pos[0] + x_0, pos[1] + y_0)
-    #    pygame.draw.circle(window, foregroundColor, pos, int(scale[0] / 10.0))
-    #    pygame.draw.circle(window, foregroundColor, pos, int(log_distance(float(values['10'][1]) * -1) * 100 * scale[0]), 1)
-    #    #print pos
-    #    print 'current time ', values['10'][0]
-
-    #if '12' in values.keys():
-    #    pos = ( int(float(aps['12'][0]) * 100 * scale[0]), int(float(aps['12'][1]) * 100 * scale[1]) )
-    #    pos = (pos[0] + x_0, pos[1] + y_0)
-    #    pygame.draw.circle(window, foregroundColor, pos, int(scale[0] / 10.0))
-    #    pygame.draw.circle(window, foregroundColor, pos, int(log_distance(float(values['12'][1]) * -1) * 100 * scale[0]), 1)
-    #    #print pos
-    #    print 'current time ', values['12'][0]
 
     pygame.display.flip() 
 
@@ -99,6 +93,7 @@ if __name__ == "__main__":
     height = 30 * 50
 
     room = (14, 30)
+    corners = [(0, 0), (3.5, 0), (3.5, 7.5), (0, 7.5)]
     origin = (6, 10)
     scale = (width / (room[0] * 100.0), height / (room[1] * 100.0))
 
@@ -110,7 +105,7 @@ if __name__ == "__main__":
     for key in sorted(data.iterkeys()):
         if k != key[0]:
             #print values
-            draw(window, values, aps, origin, scale)
+            draw(window, values, aps, corners, origin, scale)
             values = {}
             k = key[0]
             a = raw_input()
