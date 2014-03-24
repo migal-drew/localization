@@ -41,6 +41,10 @@ title("Galaxy Nexus WiFi propagation");
 ylabel("signal strength, -dB")
 
 
+function strength = simple_log_dist_117(dist)
+  strength = 20 * 1.17 * log10(0.125 / (4 * pi() * dist));
+end;
+
 function strength = simple_log_dist(dist)
   strength = 20 * 1.1 * log10(0.125 / (4 * pi() * dist));
 end;
@@ -68,6 +72,15 @@ hold on;
 plot(x_labels, theoret_model, 'c--');
 grid on;
 
+
+%theoret_model = []
+%for i = 1 : length(x_labels),
+%  theoret_model = [ theoret_model, -simple_log_dist_117(x_labels(i)) ];
+%end;
+%hold on;
+%plot(x_labels, theoret_model, 'r--');
+%grid on;
+
 tmp = [];
 median_data = [];
 
@@ -93,6 +106,47 @@ plot(x_labels, median_data, 'b*');
 
 legend('raw values', 'log-model coeff = 1.1', 'log-model without coeff', 'median values', 'location', 'northeast', 'boxon');
 legend('left');
+
+
+s_log_dist = [];
+s_log_dist_117 = [];
+log_dist = [];
+
+disp('Computing localization errors');
+for i = 1 : length(view_data)
+  %(-1) * view_data(i)
+  s_log_dist     = [s_log_dist,       -view_data(i) - simple_log_dist(steps(i))];
+  s_log_dist_117 = [s_log_dist_117,   -view_data(i) - simple_log_dist_117(steps(i))];
+  log_dist       = [log_dist,         -view_data(i) - simple_log_dist_without_coeff(steps(i))];
+end;
+
+printf('With coeff 1.1 min     %f  \n'), min(abs(s_log_dist))
+printf('With coeff 1.1 max     %f  \n'), max(abs(s_log_dist))
+printf('With coeff 1.1 median  %f  \n'), median(abs(s_log_dist))
+printf('\n')
+printf('With coeff 1.17 min    %f  \n'), min(abs(s_log_dist_117))
+printf('With coeff 1.17 max    %f  \n'), max(abs(s_log_dist_117))
+printf('With coeff 1.17 media  %fn \n'), median(abs(s_log_dist_117))
+printf('\n')
+printf('simple  min            %f  \n'),  min(abs(log_dist))
+printf('simple  max            %f  \n'),  max(abs(log_dist))
+printf('simple  median         %f  \n'),  median(abs(log_dist))
+
+
+function strength = straightforward(dist)
+  strength = (0.89 * dist + 42.7) * (-1);
+end
+
+disp('')
+disp('DIstance dependency:')
+for i = 1 : length(median_data)
+  %i
+  s = x_labels(i);
+  m = median_data(i);
+  e = abs(simple_log_dist(s) + m);
+  %e = abs(straightforward(s) + m);
+  printf('dist: %f, error %f \n', x_labels(i), e);
+end
 
 
 pause()
