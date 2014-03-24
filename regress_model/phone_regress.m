@@ -53,16 +53,16 @@ function strength = simple_log_dist_without_coeff(dist)
   strength = 20 * log10(0.125 / (4 * 3.14 * dist));
 end;
 
-theoret_model = [];
+%theoret_model = [];
 x_labels = unique(steps);
-
-for i = 1 : length(x_labels),
-  theoret_model = [ theoret_model, -simple_log_dist(x_labels(i)) ];
-end;
-
-hold on;
-grid on;
-plot(x_labels, theoret_model, 'b-');
+%
+%for i = 1 : length(x_labels),
+%  theoret_model = [ theoret_model, -simple_log_dist(x_labels(i)) ];
+%end;
+%
+%hold on;
+%grid on;
+%plot(x_labels, theoret_model, 'b-');
 
 theoret_model = []
 for i = 1 : length(x_labels),
@@ -104,7 +104,7 @@ length(median_data)
 plot(x_labels, median_data, 'b*');
 
 
-legend('raw values', 'log-model coeff = 1.1', 'log-model without coeff', 'median values', 'location', 'northeast', 'boxon');
+legend('raw values', 'log-model without coeff', 'median values', 'location', 'northeast', 'boxon');
 legend('left');
 
 
@@ -120,13 +120,13 @@ for i = 1 : length(view_data)
   log_dist       = [log_dist,         -view_data(i) - simple_log_dist_without_coeff(steps(i))];
 end;
 
-printf('With coeff 1.1 min     %f  \n'), min(abs(s_log_dist))
-printf('With coeff 1.1 max     %f  \n'), max(abs(s_log_dist))
-printf('With coeff 1.1 median  %f  \n'), median(abs(s_log_dist))
+printf('With coeff 1.1 min     error, dB   %f  \n'), min(abs(s_log_dist))
+printf('With coeff 1.1 max     error, dB   %f  \n'), max(abs(s_log_dist))
+printf('With coeff 1.1 median  error, dB   %f  \n'), median(abs(s_log_dist))
 printf('\n')
-printf('With coeff 1.17 min    %f  \n'), min(abs(s_log_dist_117))
-printf('With coeff 1.17 max    %f  \n'), max(abs(s_log_dist_117))
-printf('With coeff 1.17 media  %fn \n'), median(abs(s_log_dist_117))
+printf('With coeff 1.17 min    error, dB   %f  \n'), min(abs(s_log_dist_117))
+printf('With coeff 1.17 max    error, dB   %f  \n'), max(abs(s_log_dist_117))
+printf('With coeff 1.17 media  error, dB   %f  \n'), median(abs(s_log_dist_117))
 printf('\n')
 printf('simple  min            %f  \n'),  min(abs(log_dist))
 printf('simple  max            %f  \n'),  max(abs(log_dist))
@@ -145,7 +145,7 @@ for i = 1 : length(median_data)
   m = median_data(i);
   e = abs(simple_log_dist(s) + m);
   %e = abs(straightforward(s) + m);
-  printf('dist: %f, error %f \n', x_labels(i), e);
+  printf('dist: %f, error %f dB\n', x_labels(i), e);
 end
 
 
